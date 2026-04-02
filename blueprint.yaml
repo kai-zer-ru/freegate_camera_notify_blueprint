@@ -82,6 +82,18 @@ blueprint:
           default: false
           selector:
             boolean:
+        max_count_requests:
+          name: MAX count_requests (Optional)
+          description: |
+            Сколько раз blueprint будет пытаться отправить вложение, пока Max Notify его обрабатывает (attachment.not.ready).
+            Увеличьте, если видео/фото не успевают обработаться.
+            Рекомендуемое значение для видео: 25.
+          default: 25
+          selector:
+            number:
+              min: 1
+              max: 60
+              mode: box
     notification_customisations:
       name: |
         # Настройка уведомлений
@@ -683,6 +695,7 @@ variables:
   max_send_updates: !input max_send_updates
   max_send_genai: !input max_send_genai
   max_send_keyboard: !input max_send_keyboard
+  max_count_requests: !input max_count_requests
   zone_only: !input zone_filter
   input_zones: !input zones
   zones: "{{ input_zones }}"
@@ -820,6 +833,7 @@ actions:
                               entity_id: "{{max_notify_entity}}"
                               file: "{{video}}"
                               caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                              count_requests: "{{ max_count_requests | int }}"
                               send_keyboard: "{{ max_send_keyboard | bool }}"
                       - conditions: >-
                           {{ video and video|length > 0 and
@@ -830,6 +844,7 @@ actions:
                               entity_id: "{{max_notify_entity}}"
                               file: "{{video}}"
                               caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                              count_requests: "{{ max_count_requests | int }}"
                               send_keyboard: "{{ max_send_keyboard | bool }}"
                       - conditions: "{{ attachment and attachment|length > 0 }}"
                         sequence:
@@ -838,6 +853,7 @@ actions:
                               entity_id: "{{max_notify_entity}}"
                               file: "{{attachment}}"
                               caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                              count_requests: "{{ max_count_requests | int }}"
                               send_keyboard: "{{ max_send_keyboard | bool }}"
                     default:
                       - service: max_notify.send_message
@@ -1004,6 +1020,7 @@ actions:
                                       entity_id: "{{max_notify_entity}}"
                                       file: "{{video}}"
                                       caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                      count_requests: "{{ max_count_requests | int }}"
                                       send_keyboard: "{{ max_send_keyboard | bool }}"
                               - conditions: >-
                                   {{ video and video|length > 0 and
@@ -1014,6 +1031,7 @@ actions:
                                       entity_id: "{{max_notify_entity}}"
                                       file: "{{video}}"
                                       caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                      count_requests: "{{ max_count_requests | int }}"
                                       send_keyboard: "{{ max_send_keyboard | bool }}"
                               - conditions: "{{ attachment and attachment|length > 0 }}"
                                 sequence:
@@ -1022,6 +1040,7 @@ actions:
                                       entity_id: "{{max_notify_entity}}"
                                       file: "{{attachment}}"
                                       caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                      count_requests: "{{ max_count_requests | int }}"
                                       send_keyboard: "{{ max_send_keyboard | bool }}"
                             default:
                               - service: max_notify.send_message
@@ -1232,6 +1251,7 @@ actions:
                                     entity_id: "{{max_notify_entity}}"
                                     file: "{{video}}"
                                     caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                    count_requests: "{{ max_count_requests | int }}"
                                     send_keyboard: "{{ max_send_keyboard | bool }}"
                             - conditions: >-
                                 {{ video and video|length > 0 and
@@ -1242,6 +1262,7 @@ actions:
                                     entity_id: "{{max_notify_entity}}"
                                     file: "{{video}}"
                                     caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                    count_requests: "{{ max_count_requests | int }}"
                                     send_keyboard: "{{ max_send_keyboard | bool }}"
                             - conditions: "{{ attachment and attachment|length > 0 }}"
                               sequence:
@@ -1250,6 +1271,7 @@ actions:
                                     entity_id: "{{max_notify_entity}}"
                                     file: "{{attachment}}"
                                     caption: "{{ (title ~ '\\n' if title|length > 0 else '') ~ message }}"
+                                    count_requests: "{{ max_count_requests | int }}"
                                     send_keyboard: "{{ max_send_keyboard | bool }}"
                           default:
                             - service: max_notify.send_message
